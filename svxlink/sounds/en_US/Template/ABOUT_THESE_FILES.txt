@@ -1,0 +1,15 @@
+These audio files were generated using the "<voice name>" voice package from "voice engine used, website is helpful"
+
+each audio file should have a text file with the audio files verbiage for reference and to ease regeneration into other languages
+
+The format must be wave and 16k sample rate or they will not be playable and you will see errors in the logs.
+
+required audio files
+name.wav - vocalization of the name of the module, in this example the sound of the word "template"
+name.txt - "template"
+help.wav - a clip that provides very brief usage of the module and functionality
+help.txt - the transcript that was used to create the help.wav file
+
+optional files
+<sound_name>.wav - some applicable sound file, typically a single word or phrase, name the file appropriately "airport.wav" for the sound "airport"
+<sound_name>.txt - the transcript that was used to create the <sound_name>.wav file
