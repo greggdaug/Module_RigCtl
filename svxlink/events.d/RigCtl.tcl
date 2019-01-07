@@ -44,7 +44,7 @@ namespace eval RigCtl {
 	}
 
 
-`	# Executed when this module is being deactivated.
+	# Executed when this module is being deactivated.
 	proc deactivating_module {} {
 		variable module_name
 		Module::deactivating_module $module_name
