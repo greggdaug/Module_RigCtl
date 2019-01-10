@@ -1,7 +1,13 @@
-###############################################################################
+####################################################################################
 #  OpenRepeater RigCtl Module
-#  Coded by Aaron Crawford (N3MBH) & Gregg Daugherty (WB6YAZ)
+#  Coded by Aaron Crawford (N3MBH), Dan Loranger(KG7PAR) & Gregg Daugherty (WB6YAZ)
 #  DTMF Control of rigctl (hamlib 3.0.1) functions as defined below.
+#  This example uses preset memory settings (1-8) for an IC-7100
+#  rigctl -m 370 -r /dev/ttyUSB0 -s 9600 E n, where n = memory number
+#  config variables are set in ModuleRigCtl.config
+#
+#  When using /dev/ttyUSB0, insure permissions for /dev/ttyUSB0 are set
+#  to rw for others (chmod o+rw /dev/ttyUSB0)
 #
 #  Usage:
 #  01# = RIGCTL_1
@@ -9,7 +15,7 @@
 #  ... etc
 #
 #  Visit the project at OpenRepeater.com
-###############################################################################
+####################################################################################
 
 
 # Start of namespace
@@ -46,52 +52,57 @@ namespace eval RigCtl {
 		set n 1
 		while {$n <= 8} {
 			variable CFG_RIGCTL_$n
-			if { ([info exists CFG_RIGCTL_$n]) && ([set CFG_RIGCTL_$n] > 0) } {
-				set RIGCTL($n) [set CFG_RIGCTL_$n]
-			}
+			# printInfo [set CFG_RIGCTL_$n]
+			# if { ([info exists CFG_RIGCTL_$n]) && ([set CFG_RIGCTL_$n] > 0) } {
+				# set RIGCTL($n) [set CFG_RIGCTL_$n]
+				# printInfo $RIGCTL($n)
+			# }
+			  set RIGCTL($n) [set CFG_RIGCTL_$n]
+				printInfo $RIGCTL($n)
 		    set n [expr {$n + 1}]
 		}
 
+    # printInfo $RIGCTL(1)
 
 		# Access Variables
-		#variable CFG_ACCESS_PIN
-		#variable CFG_ACCESS_ATTEMPTS_ALLOWED
-		#variable ACCESS_PIN_REQ
-		#variable ACCESS_GRANTED
-		#variable ACCESS_ATTEMPTS_ATTEMPTED
-	  #  if {[info exists CFG_ACCESS_PIN]} {
-		#	set ACCESS_PIN_REQ 1
-		#	if {![info exists CFG_ACCESS_ATTEMPTS_ALLOWED]} { set CFG_ACCESS_ATTEMPTS_ALLOWED 3 }
-		#} else {
-		#	set ACCESS_PIN_REQ 0
-		#}
-		#set ACCESS_GRANTED 0
-		#set ACCESS_ATTEMPTS_ATTEMPTED 0
+		variable CFG_ACCESS_PIN
+		variable CFG_ACCESS_ATTEMPTS_ALLOWED
+		variable ACCESS_PIN_REQ
+		variable ACCESS_GRANTED
+		variable ACCESS_ATTEMPTS_ATTEMPTED
+	    if {[info exists CFG_ACCESS_PIN]} {
+			set ACCESS_PIN_REQ 1
+			if {![info exists CFG_ACCESS_ATTEMPTS_ALLOWED]} { set CFG_ACCESS_ATTEMPTS_ALLOWED 3 }
+		} else {
+			set ACCESS_PIN_REQ 0
+		}
+		set ACCESS_GRANTED 0
+		set ACCESS_ATTEMPTS_ATTEMPTED 0
 
 
-		#printInfo "Module Activated"
+		printInfo "Module Activated"
 
-		#if {$ACCESS_PIN_REQ == "1"} {
-		#	printInfo "--- PLEASE ENTER YOUR PIN FOLLOWED BY THE POUND SIGN ---"
-		#	playMsg "access_enter_pin";
+		if {$ACCESS_PIN_REQ == "1"} {
+			printInfo "--- PLEASE ENTER YOUR PIN FOLLOWED BY THE POUND SIGN ---"
+			playMsg "access_enter_pin";
 
-		#} else {
-		#	# No Pin Required but this is the first time the module has been run so play prompt
-		#	playMsg "enter_command";
-		#}
+		} else {
+			# No Pin Required but this is the first time the module has been run so play prompt
+			playMsg "enter_command";
+		}
 
 	}
 
 
-	# Executed when this module is being deactivated.
-	#proc deactivateCleanup {} {
-	#	printInfo "Module deactivated"
-  #
-	#	variable RIGCTL_OFF_DEACTIVATION
-	#	if {$RIGCTL_OFF_DEACTIVATION == "1"} {
-	#		RigCtlDefault
-	#	}
-	#}
+	 # Executed when this module is being deactivated.
+	proc deactivateCleanup {} {
+		printInfo "Module deactivated"
+
+		variable RIGCTL_OFF_DEACTIVATION
+		if {$RIGCTL_OFF_DEACTIVATION == "1"} {
+			RigCtlDefault
+		}
+	}
 
 
 	# Returns voice status of RigCtl setting
@@ -109,68 +120,99 @@ namespace eval RigCtl {
   #}
 
 
-	# Proceedure to set default
-	# proc RigCtlDefault {} {
-	#	variable RIGCTL
-	#	printInfo "SETTING DEFAULT"
-	#	playMsg "rigctl_default";
-	#	playMsg "on";
-	#	exec rigctl {-m 370 -r /dev/ttyUSB0 F 146940000 M FM 6000}
-	#	exec echo 1 > /home/root/rcvalue/rcvalue &
-	# }
-
-
-	# Proceedure to output rigctl command
-	#proc setRigCtl {NUM} {
-	#	variable RIGCTL
-	#	if {RIGCTL($NUM) == 1} {
-	#	  exec rigctl $RigCommand1
-	#	} elseif {RIGCTL($NUM) ==2} {
-	#	  exec rigctl $RigCommand2
-	#	printInfo "RigCtl $NUM ON (RIGCTL: $RIGCTL($NUM))"
-	#	playMsg "rigctl";
-	#	playMsg "$NUM";
-	#	playMsg "on";
-	#	exec echo $NUM > /home/root/rcvalue/rcvalue &
-	# }
-	#}
-
-
 	# Executed when a DTMF command is received
 	proc changeRigState {cmd} {
 		printInfo "DTMF command received: $cmd"
 
 		variable RIGCTL
 
+		# printInfo $RIGCTL(2)
+
 		if {$cmd == "01"} {
+		  # variable CFG_RIGCTL_1
+		  # set MEM1 [set CFG_RIGCTL_1]
+			printInfo $RIGCTL(1)
+			playMsg "mem1"
+			# exec rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 1}
 			exec rigctl {*}$RIGCTL(1)
+			printInfo "Memory 1 selected"
+			playMsg "mem1sel"
 
 		} elseif {$cmd == "02"} {
-			exec rigctl {*}$RIGCTL(2)
+		    # variable CFG_RIGCTL_2
+		    # set MEM2 [set CFG_RIGCTL_2]
+		    printInfo $RIGCTL(2)
+			  playMsg "mem2"
+				# exec rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 2}
+				exec rigctl {*}$RIGCTL(2)
+				printInfo "Memory 2 selected"
+				playMsg "mem2sel"
 
 		} elseif {$cmd == "03"} {
-			exec rigctl {*}$RIGCTL(3)
+		    # variable CFG_RIGCTL_3
+				# set MEM3 [set CFG_RIGCTL_3]
+		    printInfo $RIGCTL(3)
+			  playMsg "mem3"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 3}
+			  exec rigctl {*}$RIGCTL(3)
+				printInfo "Memory 3 selected"
+				playMsg "mem3sel"
 
 		} elseif {$cmd == "04"} {
-			exec rigctl {*}$RIGCTL(4)
+		    # variable CFG_RIGCTL_4
+				# set MEM4 [set CFG_RIGCTL_4]
+        printInfo $RIGCTL(4)
+				playMsg "mem4"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 4}
+			  exec rigctl {*}$RIGCTL(4)
+				printInfo "Memory 4 selected"
+				playMsg "mem4sel"
 
 		} elseif {$cmd == "05"} {
-			exec rigctl {*}$RIGCTL(5)
+		    # variable CFG_RIGCTL_5
+				# set MEM5 [set CFG_RIGCTL_5]
+        printInfo $RIGCTL(5)
+				playMsg "mem5"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 5}
+				exec rigctl {*}$RIGCTL(5)
+				printInfo "Memory 5 selected"
+				playMsg "mem5sel"
 
 		} elseif {$cmd == "06"} {
-			exec rigctl {*}$RIGCTL(6)
+		    # variable CFG_RIG_CTL_6
+				# set MEM6 [set RIGCTL_6]
+        printInfo $RIGCTL(6)
+				playMsg "mem6"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 6}
+				exec rigctl {*}$RIGCTL(6)
+				printInfo "Memory 6 selected"
+				playMsg "mem6sel"
 
 		} elseif {$cmd == "07"} {
-			exec rigctl {*}$RIGCTL(7)
+		    # variable CFG_RIGCTL_7
+				# set MEM7 [set CFG_RIGCTL_7]
+        printInfo $RIGCTL(7)
+				playMsg "mem7"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 7}
+				exec rigctl {*}$RIGCTL(7)
+				printInfo "Memory 7 selected"
+				playMsg "mem7sel"
 
 		} elseif {$cmd == "08"} {
-			exec rigctl {*}$RIGCTL(8)
+		    # variable CFG_RIGCTL_8
+				# set MEM7 [set RIGCTL_8]
+        printInfo $RIGCTL(8)
+				playMsg "mem8"
+				# exec /usr/bin/rigctl {*}{-m 370 -r /dev/ttyUSB0 -s 9600 E 8}
+				exec rigctl {*}$RIGCTL(8)
+        printInfo "Memory 8 selected"
+				playMsg "mem8sel"
 
 		}	elseif {$cmd == ""} {
-			deactivateModule
+			  deactivateModule
 
 		} else {
-			processEvent "unknown_command $cmd"
+			  processEvent "unknown_command $cmd"
 		}
 
 	}

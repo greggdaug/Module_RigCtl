@@ -1,7 +1,13 @@
-###############################################################################
+####################################################################################
 #  OpenRepeater RigCtl Module
-#  Coded by Aaron Crawford (N3MBH) & Gregg Daugherty (WB6YAZ)
+#  Coded by Aaron Crawford (N3MBH), Dan Loranger(KG7PAR) & Gregg Daugherty (WB6YAZ)
 #  DTMF Control of rigctl (hamlib 3.0.1) functions as defined below.
+#  This example uses preset memory settings (1-8) for an IC-7100
+#  rigctl -m 370 -r /dev/ttyUSB0 -s 9600 E n, where n = memory number
+#  config variables are set in ModuleRigCtl.config
+#
+#  When using /dev/ttyUSB0, insure permissions for /dev/ttyUSB0 are set
+#  to rw for others (chmod o+rw /dev/ttyUSB0)
 #
 #  Usage:
 #  01# = RIGCTL_1
@@ -9,7 +15,7 @@
 #  ... etc
 #
 #  Visit the project at OpenRepeater.com
-###############################################################################
+####################################################################################
 
 
 # Start of namespace
