@@ -4,7 +4,7 @@
 #  DTMF Control of rigctl (hamlib 3.0.1) functions as defined below.
 #  This example uses preset memory settings (1-8) for an IC-7100
 #  rigctl -m 370 -r /dev/ttyUSB0 -s 9600 E n, where n = memory number
-#  config variables are set in ModuleRigCtl.config
+#  config variables are set in /etc/svxlink/ModuleRigCtl.config
 #
 #  When using /dev/ttyUSB0, insure permissions for /dev/ttyUSB0 are set
 #  to rw for others (chmod o+rw /dev/ttyUSB0)
@@ -98,19 +98,19 @@ namespace eval RigCtl {
 	proc dtmfCmdReceived {cmd} {
 		printInfo "DTMF command received: $cmd";
 
-		if {$cmd == "0"} {
-			processEvent "play_help"
-		} elseif {$cmd == "1"} {
+		#if {$cmd == "0"} {
+		#	processEvent "play_help"
+		#} elseif {$cmd == "1"} {
 			# getNumberOfRecords
-		} elseif {$cmd == "2"} {
+		#} elseif {$cmd == "2"} {
 			# printInfo "relays active"
 			# playAllWeatherInfos
-		} elseif {$cmd == "3"} {
+		#} elseif {$cmd == "3"} {
 			# printInfo "relays non-active"
 			#    deactivateModule
-		} else {
-			processEvent "unknown_command $cmd"
-		}
+		#} else {
+		#	processEvent "unknown_command $cmd"
+		#}
 	}
 
 
